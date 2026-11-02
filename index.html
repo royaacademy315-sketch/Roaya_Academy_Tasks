@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة تسليم التاسكات - أكاديمية الكورسات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <nav class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <i class="fa-solid font-bold text-2xl text-amber-400 fa-graduation-cap"></i>
+                <h1 class="text-xl font-bold">أكاديمية الكورسات | نظام التاسكات</h1>
+            </div>
+            <div class="flex space-x-2 space-x-reverse">
+                <button onclick="switchTab('submit')" id="tab-submit" class="px-4 py-2 rounded-lg bg-amber-500 text-slate-900 font-bold transition">
+                    <i class="fa-solid fa-cloud-arrow-up ml-1"></i> تسليم تاسك
+                </button>
+                <button onclick="switchTab('query')" id="tab-query" class="px-4 py-2 rounded-lg bg-indigo-800 text-white transition">
+                    <i class="fa-solid fa-chart-line ml-1"></i> استعلام درجاتى
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-4 sm:p-6">
+        <div id="view-submit" class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-100">
+            <h2 class="text-2xl font-bold text-indigo-950 mb-6 flex items-center gap-2 border-b pb-4">
+                <i class="fa-solid fa-file-arrow-up text-amber-500"></i> نموذج تسليم التاسك
+            </h2>
+
+            <form id="taskForm" onsubmit="handleTaskSubmit(event)" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">كود الطالب *</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="studentCode" required placeholder="أدخل كودك (مثال: STD-101)" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <button type="button" onclick="lookupStudent()" class="bg-indigo-600 text-white px-5 rounded-xl font-bold hover:bg-indigo-700 transition">بحث</button>
+                    </div>
+                </div>
+
+                <div id="studentInfoBox" class="hidden bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><span class="text-xs text-slate-500">اسم الطالب:</span> <p id="infoName" class="font-bold text-indigo-950"></p></div>
+                    <div><span class="text-xs text-slate-500">الروند الحالي:</span> <p id="infoRound" class="font-bold text-indigo-950"></p></div>
+                    <div><span class="text-xs text-slate-500">المجموعة:</span> <p id="infoGroup" class="font-bold text-indigo-950"></p></div>
+                    <div><span class="text-xs text-slate-500">نوع المتابعة:</span> <p id="infoTrack" class="font-bold text-indigo-950"></p></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">اسم التاسك *</label>
+                        <select id="taskName" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500">
+                            <option value="">اختر التاسك</option>
+                            <option value="تاسك 1">تاسك 1</option>
+                            <option value="تاسك 2">تاسك 2</option>
+                            <option value="تاسك 3">تاسك 3</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">نوع المتابعة *</label>
+                        <select id="trackType" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500">
+                            <option value="أونلاين (Online)">أونلاين (Online)</option>
+                            <option value="أوفلاين (Offline)">أوفلاين (Offline)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">ارفع ملف التاسك (إكسيل، PDF، صور، فديو) *</label>
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('taskFile').click()">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-400 mb-2"></i>
+                        <p class="text-sm font-medium text-slate-600">اضغط لاختيار الملف من جهازك</p>
+                        <input type="file" id="taskFile" required class="hidden" onchange="showFileName(this)">
+                        <p id="fileNameDisplay" class="mt-3 text-sm font-bold text-indigo-700"></p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 p-3 rounded-lg text-xs text-slate-600 font-mono">
+                    <i class="fa-brands fa-google-drive text-emerald-600 ml-1"></i> مسار الحفظ التلقائي: 
+                    <span id="drivePathPreview">نوع المتابعة / الروند / المجموعة / اسم الطالب</span>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg">
+                    تسليم التاسك
+                </button>
+            </form>
+        </div>
+
+        <div id="view-query" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+                <h2 class="text-xl font-bold text-indigo-950 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-amber-500"></i> استعلام عن النتائج والدرجات
+                </h2>
+                <div class="flex gap-2">
+                    <input type="text" id="queryCode" placeholder="أدخل كودك لاستعراض درجاتك" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="fetchStudentReport()" class="bg-amber-500 text-slate-900 font-bold px-6 rounded-xl hover:bg-amber-400 transition">استعلام</button>
+                </div>
+            </div>
+
+            <div id="reportResult" class="hidden space-y-6">
+                <div class="bg-indigo-900 text-white rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h3 id="resStudentName" class="text-2xl font-bold"></h3>
+                        <p class="text-indigo-200 text-sm mt-1" id="resStudentDetails"></p>
+                    </div>
+                    <div class="bg-white/10 px-6 py-4 rounded-xl text-center border border-white/20">
+                        <span class="text-xs text-indigo-200 block">ترتيبك على الروند</span>
+                        <span id="resRank" class="text-3xl font-extrabold text-amber-400">#1</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100 overflow-x-auto">
+                    <h4 class="font-bold text-slate-800 mb-4">سجل تاسكاتك</h4>
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-50 border-b text-slate-500">
+                            <tr>
+                                <th class="p-3">اسم التاسك</th>
+                                <th class="p-3">التاريخ</th>
+                                <th class="p-3">الحالة</th>
+                                <th class="p-3">الدرجة</th>
+                                <th class="p-3">الملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resTasksTable" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFV80XZc5KHnEdmhMV5N2TaIAgOE3zWAzAcMHPTVqmAh6HE-9CeWN9fZVXrrtafSE2/exec";
+
+        const mockDatabase = {
+            "STD-101": { name: "أحمد محمود", round: "روند 12", group: "مجموعة A", track: "أونلاين (Online)" },
+            "STD-102": { name: "سارة علي", round: "روند 12", group: "مجموعة B", track: "أوفلاين (Offline)" }
+        };
+
+        function switchTab(tab) {
+            document.getElementById('view-submit').classList.toggle('hidden', tab !== 'submit');
+            document.getElementById('view-query').classList.toggle('hidden', tab !== 'query');
+        }
+
+        function lookupStudent() {
+            const code = document.getElementById('studentCode').value.trim();
+            const student = mockDatabase[code];
+            const box = document.getElementById('studentInfoBox');
+            
+            if(student) {
+                document.getElementById('infoName').innerText = student.name;
+                document.getElementById('infoRound').innerText = student.round;
+                document.getElementById('infoGroup').innerText = student.group;
+                document.getElementById('infoTrack').innerText = student.track;
+                document.getElementById('trackType').value = student.track;
+                box.classList.remove('hidden');
+                
+                document.getElementById('drivePathPreview').innerText = 
+                    `${student.track} / ${student.round} / ${student.group} / ${student.name}`;
+            } else {
+                alert('الكود غير مسجل، تأكد من كود الطالب.');
+                box.classList.add('hidden');
+            }
+        }
+
+        function showFileName(input) {
+            if(input.files[0]) {
+                document.getElementById('fileNameDisplay').innerText = "تم اختيار الملف: " + input.files[0].name;
+            }
+        }
+
+        async function handleTaskSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            const code = document.getElementById('studentCode').value;
+            const student = mockDatabase[code];
+            const fileInput = document.getElementById('taskFile');
+
+            if(!student) {
+                alert('يرجى البحث عن كود الطالب أولاً.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "جاري رفع الملف...";
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function() {
+                const payload = {
+                    studentCode: code,
+                    studentName: student.name,
+                    round: student.round,
+                    group: student.group,
+                    trackType: document.getElementById('trackType').value,
+                    taskName: document.getElementById('taskName').value,
+                    fileName: file.name,
+                    fileData: reader.result
+                };
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('تم تسليم التاسك بنجاح وحفظه في مجلد الدرايف المخصص!');
+                    document.getElementById('taskForm').reset();
+                    document.getElementById('studentInfoBox').classList.add('hidden');
+                    document.getElementById('fileNameDisplay').innerText = "";
+                } catch(err) {
+                    alert('حدث خطأ في الاتصال.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = "تسليم التاسك";
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function fetchStudentReport() {
+            const code = document.getElementById('queryCode').value.trim();
+            const student = mockDatabase[code];
+            if(!student) {
+                alert('كود غير صحيح!');
+                return;
+            }
+
+            document.getElementById('resStudentName').innerText = student.name;
+            document.getElementById('resStudentDetails').innerText = `${student.round} | ${student.group} | ${student.track}`;
+            document.getElementById('resRank').innerText = "#1";
+
+            const tasksTable = document.getElementById('resTasksTable');
+            tasksTable.innerHTML = `
+                <tr>
+                    <td class="p-3 font-bold text-indigo-900">تاسك 1</td>
+                    <td class="p-3 text-slate-500">2026-03-01</td>
+                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded">تم التسليم</span></td>
+                    <td class="p-3 font-bold text-emerald-600">-</td>
+                    <td class="p-3 text-slate-600">قيد المراجعة من المتابع</td>
+                </tr>
+            `;
+            document.getElementById('reportResult').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
